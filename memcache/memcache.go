@@ -168,7 +168,7 @@ type Item struct {
 	Expiration int32
 
 	// Compare and swap ID.
-	casid uint64
+	CasId uint64
 }
 
 // conn is a connection to a server.
@@ -520,7 +520,7 @@ func parseGetResponse(r *bufio.Reader, cb func(*Item)) error {
 // It does not read the bytes of the item.
 func scanGetResponseLine(line []byte, it *Item) (size int, err error) {
 	pattern := "VALUE %s %d %d %d\r\n"
-	dest := []interface{}{&it.Key, &it.Flags, &size, &it.casid}
+	dest := []interface{}{&it.Key, &it.Flags, &size, &it.CasId}
 	if bytes.Count(line, space) == 3 {
 		pattern = "VALUE %s %d %d\r\n"
 		dest = dest[:3]
@@ -603,7 +603,7 @@ func (c *Client) populateOne(rw *bufio.ReadWriter, verb string, item *Item) erro
 	var err error
 	if verb == "cas" {
 		_, err = fmt.Fprintf(rw, "%s %s %d %d %d %d\r\n",
-			verb, item.Key, item.Flags, item.Expiration, len(item.Value), item.casid)
+			verb, item.Key, item.Flags, item.Expiration, len(item.Value), item.CasId)
 	} else {
 		_, err = fmt.Fprintf(rw, "%s %s %d %d %d\r\n",
 			verb, item.Key, item.Flags, item.Expiration, len(item.Value))
